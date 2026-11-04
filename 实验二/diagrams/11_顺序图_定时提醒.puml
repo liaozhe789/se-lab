@@ -1,0 +1,36 @@
+@startuml 11_顺序图_定时提醒
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 150
+skinparam sequence {
+  ArrowColor #2E6DA4
+  ArrowFontSize 15
+  LifeLineBorderColor #9DB8D2
+  ParticipantBorderColor #2E6DA4
+  ParticipantBackgroundColor #EAF3FB
+  ParticipantFontSize 15
+}
+participant "时钟（定时器）" as T
+participant "看护平台服务端" as SRV
+database "提醒任务库" as DB
+participant "消息推送服务" as PUSH
+actor "老人" as E
+participant "老人端 App" as EAPP
+actor "家属" as F
+
+T -> SRV : 到达提醒时刻
+SRV -> DB : 查询到期提醒任务
+DB --> SRV : 任务列表
+SRV -> PUSH : 推送提醒
+PUSH --> EAPP : 语音播报提醒
+EAPP --> E : 播报“该服药了”
+alt 老人确认
+  E -> EAPP : 点击已服用
+  EAPP -> SRV : 上报确认
+  SRV -> DB : 标记任务完成
+  SRV --> F : 同步完成情况
+else 超时未确认
+  SRV -> PUSH : 二次推送
+  PUSH --> F : 提醒家属关注
+end
+@enduml

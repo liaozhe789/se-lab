@@ -1,0 +1,22 @@
+@startuml 13_状态图_异常事件
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 150
+skinparam state {
+  BackgroundColor #EAF3FB
+  BorderColor #2E6DA4
+  FontSize 15
+}
+skinparam ArrowColor #2E6DA4
+skinparam ArrowFontSize 13
+
+[*] -down-> 已检测 : 巡检发现指标越界
+已检测 -down-> 待确认 : 生成异常事件
+待确认 -down-> 已通知 : 推送家属与医生
+已通知 -down-> 处置中 : 家属确认接单
+已通知 -right-> 已关闭 : 30 分钟无人确认
+处置中 -down-> 已关闭 : 处置完成
+处置中 -right-> 已升级 : 15 分钟未闭环
+已升级 -down-> 已关闭 : 医生介入处理
+已关闭 -down-> [*]
+@enduml
