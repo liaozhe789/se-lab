@@ -1,0 +1,36 @@
+@startuml 09_顺序图_异常检测与通知
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 150
+skinparam sequence {
+  ArrowColor #2E6DA4
+  ArrowFontSize 15
+  LifeLineBorderColor #9DB8D2
+  ParticipantBorderColor #2E6DA4
+  ParticipantBackgroundColor #EAF3FB
+  ParticipantFontSize 15
+}
+participant "时钟（定时器）" as T
+participant "看护平台服务端" as SRV
+participant "机器人终端" as ROB
+database "监测数据库" as DB
+participant "消息推送服务" as PUSH
+actor "家属" as F
+actor "医生" as D
+
+T -> SRV : 每 30 秒触发巡检
+SRV -> ROB : 读取传感器数据
+ROB --> SRV : 心率、位置、姿态
+SRV -> SRV : 阈值与规则判定
+alt 指标正常
+  SRV -> DB : 写入监测记录
+else 指标异常
+  SRV -> DB : 写入异常事件
+  SRV -> PUSH : 推送告警
+  PUSH --> F : 告警通知
+  PUSH --> D : 告警通知
+  F -> SRV : 确认并处置
+  SRV -> DB : 更新事件状态
+  SRV --> D : 同步处置结果
+end
+@enduml

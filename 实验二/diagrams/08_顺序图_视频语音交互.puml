@@ -1,0 +1,35 @@
+@startuml 08_顺序图_视频语音交互
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 150
+skinparam sequence {
+  ArrowColor #2E6DA4
+  ArrowFontSize 15
+  LifeLineBorderColor #9DB8D2
+  ParticipantBorderColor #2E6DA4
+  ParticipantBackgroundColor #EAF3FB
+  ParticipantFontSize 15
+}
+actor "老人" as E
+participant "老人端 App" as EAPP
+participant "看护平台服务端" as SRV
+participant "消息推送服务" as PUSH
+participant "家属端 App" as FAPP
+participant "机器人终端" as ROB
+
+E -> EAPP : 点击呼叫家属
+EAPP -> SRV : 发起通话请求
+SRV -> PUSH : 推送来电提醒
+PUSH --> FAPP : 来电通知
+FAPP -> SRV : 接听
+SRV -> SRV : 建立信令会话
+SRV -> ROB : 请求音视频中继
+ROB --> SRV : 采集并上传媒体流
+SRV --> EAPP : 下行视频流
+SRV --> FAPP : 下行视频流
+EAPP -> SRV : 语音上行
+SRV --> FAPP : 转发语音
+FAPP -> SRV : 挂断
+SRV -> SRV : 结束会话并记录时长
+SRV --> EAPP : 通话结束
+@enduml

@@ -1,0 +1,112 @@
+@startuml 12_类图_领域模型
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam class {
+  BackgroundColor #EAF3FB
+  BorderColor #2E6DA4
+  ArrowColor #2E6DA4
+  FontSize 12
+  AttributeFontSize 11
+  AttributeFontColor #333333
+}
+skinparam classAttributeIconSize 0
+hide circle
+left to right direction
+
+class 账户 {
+  - 账号 : String
+  - 密码哈希 : String
+  - 角色 : 枚举
+  + 登录(账号, 密码) : 令牌
+  + 修改密码(旧, 新) : Boolean
+}
+
+class 老人 {
+  - 编号 : String
+  - 姓名 : String
+  - 年龄 : Integer
+  - 联系方式 : String
+  - 健康档案 : String
+  + 查看提醒() : List
+  + 发起通话(对象) : 会话
+}
+
+class 家属 {
+  - 编号 : String
+  - 姓名 : String
+  - 与老人关系 : String
+  + 绑定老人(老人编号) : Boolean
+  + 查看监测(时间段) : List
+}
+
+class 医生 {
+  - 编号 : String
+  - 姓名 : String
+  - 科室 : String
+  + 查看健康档案(老人编号) : 档案
+  + 处置异常(事件编号) : Boolean
+}
+
+class 管理员 {
+  - 编号 : String
+  + 维护账号() : Boolean
+  + 修改系统设置(键, 值) : Boolean
+}
+
+class 机器人 {
+  - 编号 : String
+  - 型号 : String
+  - 电量 : Integer
+  - 运行状态 : 枚举
+  + 采集数据() : 监测记录
+  + 执行指令(指令) : 结果
+}
+
+class 监测记录 {
+  - 记录编号 : String
+  - 心率 : Integer
+  - 位置 : 坐标
+  - 采集时间 : DateTime
+}
+
+class 异常事件 {
+  - 事件编号 : String
+  - 类型 : 枚举
+  - 等级 : 枚举
+  - 发生时间 : DateTime
+  - 状态 : 枚举
+  + 确认(处置人) : Boolean
+  + 关闭(结论) : Boolean
+}
+
+class 提醒任务 {
+  - 任务编号 : String
+  - 提醒时间 : Time
+  - 内容 : String
+  - 重复规则 : String
+  - 状态 : 枚举
+  + 触发() : 通知
+  + 标记完成() : Boolean
+}
+
+class 系统设置 {
+  - 键 : String
+  - 值 : String
+  - 说明 : String
+  + 读取(键) : 值
+  + 更新(键, 值) : Boolean
+}
+
+账户 <|-- 老人
+账户 <|-- 家属
+账户 <|-- 医生
+账户 <|-- 管理员
+家属 "1" -- "0..*" 老人 : 绑定
+医生 "0..*" -- "0..*" 老人 : 负责
+老人 "1" -- "1" 机器人 : 配备
+机器人 "1" -- "0..*" 监测记录 : 采集
+监测记录 "0..*" -- "0..1" 异常事件 : 触发
+异常事件 "0..*" -- "0..*" 家属 : 通知
+老人 "1" -- "0..*" 提醒任务 : 拥有
+管理员 "1" -- "0..*" 系统设置 : 维护
+@enduml

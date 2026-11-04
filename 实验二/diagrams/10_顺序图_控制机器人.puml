@@ -1,0 +1,31 @@
+@startuml 10_顺序图_控制机器人
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 150
+skinparam sequence {
+  ArrowColor #2E6DA4
+  ArrowFontSize 15
+  LifeLineBorderColor #9DB8D2
+  ParticipantBorderColor #2E6DA4
+  ParticipantBackgroundColor #EAF3FB
+  ParticipantFontSize 15
+}
+actor "家属" as F
+participant "家属端 App" as APP
+participant "看护平台服务端" as SRV
+database "绑定关系库" as DB
+participant "机器人终端" as ROB
+
+F -> APP : 打开控制面板
+APP -> SRV : 申请控制权
+SRV -> DB : 校验家属与老人绑定关系
+DB --> SRV : 绑定有效
+SRV --> APP : 下发控制令牌
+F -> APP : 选择“自主跟随”
+APP -> SRV : 提交指令 模式=跟随
+SRV -> ROB : 转发控制指令
+ROB -> ROB : 启动视觉跟随
+ROB --> SRV : 指令执行结果
+SRV --> APP : 状态回显
+APP --> F : 面板显示跟随中
+@enduml

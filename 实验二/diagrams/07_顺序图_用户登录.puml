@@ -1,0 +1,32 @@
+@startuml 07_顺序图_用户登录
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 150
+skinparam sequence {
+  ArrowColor #2E6DA4
+  ArrowFontSize 15
+  LifeLineBorderColor #9DB8D2
+  ParticipantBorderColor #2E6DA4
+  ParticipantBackgroundColor #EAF3FB
+  ParticipantFontSize 15
+}
+actor "家属/医生/管理员" as U
+participant "移动端 App" as APP
+participant "看护平台服务端" as SRV
+database "用户数据库" as DB
+
+U -> APP : 输入账号与密码
+APP -> APP : 本地格式校验
+APP -> SRV : POST /api/login
+SRV -> DB : 按账号查询用户
+DB --> SRV : 用户记录与角色
+SRV -> SRV : 校验密码哈希
+alt 校验失败
+  SRV --> APP : 401 账号或密码错误
+  APP --> U : 提示重新输入
+else 校验通过
+  SRV -> SRV : 签发访问令牌
+  SRV --> APP : 200 令牌与角色
+  APP --> U : 进入对应角色首页
+end
+@enduml
