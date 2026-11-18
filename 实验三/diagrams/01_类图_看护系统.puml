@@ -1,0 +1,105 @@
+@startuml 01_类图_看护系统
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 200
+skinparam class {
+  BackgroundColor #EAF3FB
+  BorderColor #2E6DA4
+  ArrowColor #2E6DA4
+  FontSize 17
+  AttributeFontSize 14
+  AttributeFontColor #333333
+}
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam nodesep 45
+skinparam ranksep 55
+hide circle
+left to right direction
+
+
+abstract class 用户 {
+  # 账号 : String
+  # 密码哈希 : String
+  # 姓名 : String
+  + 登录() : 令牌
+  + 修改密码() : Boolean
+}
+
+class 老人 {
+  - 编号 : String
+  - 年龄 : Integer
+  - 健康档案 : String
+  + 查看提醒() : List
+  + 一键呼救() : 警报
+}
+
+class 家属 {
+  - 编号 : String
+  - 与老人关系 : String
+  + 绑定老人() : Boolean
+  + 接听通话() : Boolean
+}
+
+class 医生 {
+  - 编号 : String
+  - 科室 : String
+  + 查看档案() : 档案
+  + 处置警报() : Boolean
+}
+
+class 管理员 {
+  - 编号 : String
+  + 维护账号() : Boolean
+}
+
+class 机器人 {
+  - 编号 : String
+  - 电量 : Integer
+  - 运行状态 : 枚举
+  + 采集数据() : 监测记录
+  + 执行指令() : 结果
+  + 自主跟随() : Boolean
+  + 回充() : Boolean
+}
+
+class 紧急警报 {
+  - 编号 : String
+  - 类型 : 枚举
+  - 等级 : 枚举
+  - 状态 : 枚举
+  + 触发() : 警报
+  + 通知() : Boolean
+  + 确认() : Boolean
+  + 解决() : Boolean
+}
+
+class 视频通话 {
+  - 编号 : String
+  - 发起方 : String
+  - 开始时间 : DateTime
+  + 建立() : 会话
+  + 挂断() : Boolean
+}
+
+class 监测记录 {
+  - 编号 : String
+  - 心率 : Integer
+  - 采集时间 : DateTime
+  + 判定越界() : Boolean
+}
+
+用户 <|-- 老人
+用户 <|-- 家属
+用户 <|-- 医生
+用户 <|-- 管理员
+
+老人 "1" -- "1" 机器人 : 配备
+机器人 "1" *-- "0..*" 监测记录 : 采集
+监测记录 "0..*" --> "0..1" 紧急警报 : 触发
+老人 "1" -- "0..*" 紧急警报 : 关联
+紧急警报 "0..*" -- "0..*" 家属 : 通知
+紧急警报 "0..*" -- "0..*" 医生 : 派单
+老人 "1" -- "0..*" 视频通话 : 发起
+家属 "0..*" -- "0..*" 视频通话 : 参与
+@enduml

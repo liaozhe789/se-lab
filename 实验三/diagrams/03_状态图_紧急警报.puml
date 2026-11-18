@@ -1,0 +1,28 @@
+@startuml 03_状态图_紧急警报
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 200
+skinparam state {
+  BackgroundColor #EAF3FB
+  BorderColor #2E6DA4
+  FontSize 20
+}
+skinparam ArrowColor #2E6DA4
+skinparam ArrowFontSize 16
+
+state "触发" as Trigger
+state "通知" as Notify
+state "确认" as Confirm
+state "处理" as Handle
+state "解决" as Resolved
+
+[*] --> Trigger : 指标越界或一键呼救
+Trigger --> Notify : 生成警报并分级
+Notify --> Confirm : 家属或医生接单
+Notify --> Handle : 三次无响应转人工
+Confirm --> Handle : 处置人到达现场
+Confirm --> Resolved : 判定为误报
+Handle --> Resolved : 险情解除
+Handle --> Trigger : 险情未解除
+Resolved --> [*]
+@enduml

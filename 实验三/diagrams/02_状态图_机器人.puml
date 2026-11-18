@@ -1,0 +1,28 @@
+@startuml 02_状态图_机器人
+skinparam defaultFontName "Microsoft YaHei"
+skinparam shadowing false
+skinparam dpi 200
+skinparam state {
+  BackgroundColor #EAF3FB
+  BorderColor #2E6DA4
+  FontSize 20
+}
+skinparam ArrowColor #2E6DA4
+skinparam ArrowFontSize 16
+state "待机" as Idle
+state "充电" as Charge
+state "巡检" as Patrol
+state "跟随" as Follow
+state "紧急处理" as Emergency
+[*] --> Idle : 开机自检通过
+Idle --> Patrol : 到达巡检时刻
+Idle --> Follow : 收到跟随指令
+Idle --> Emergency : 收到紧急警报
+Patrol --> Idle : 巡检任务完成
+Follow --> Idle : 收到停止指令
+Emergency --> Idle : 现场处置完成
+Patrol --> Charge : 电量低于 20%
+Follow --> Charge : 电量低于 20%
+Charge -up-> Idle : 电量达到 90%
+Idle --> [*] : 关机
+@enduml
